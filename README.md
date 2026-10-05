@@ -5,7 +5,7 @@ English speech recognition that runs entirely in the browser. It uses
 WebGPU runs the 24-layer FastConformer encoder. A 42 KB WebAssembly module handles weight decompression, log-mel
 features and the TDT decoder. Audio never leaves the page.
 
-**Live demo:** https://lulzx.github.io/phonon-web/
+**Live demo:** https://lulzx.com/phonon-web/
 
 - Transcribes audio files, or the microphone live while you speak
 - 162.6 MB model download, cached by the browser after the first visit
