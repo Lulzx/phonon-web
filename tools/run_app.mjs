@@ -4,7 +4,7 @@ const browser = await chromium.launch({ executablePath: "/Applications/Google Ch
 const page = await browser.newPage();
 page.on("pageerror", (e) => console.log("[pageerror]", e.message));
 page.on("console", (m) => { if (m.type() === "error") console.log("[console]", m.text()); });
-await page.goto("http://127.0.0.1:8765/docs/index.html");
+await page.goto(process.env.URL || "http://127.0.0.1:8765/docs/index.html");
 await page.click("#load");
 await page.waitForFunction(() => !document.getElementById("pick").disabled || document.getElementById("err").textContent, null, { timeout: 120000 });
 console.log("status:", await page.textContent("#status"));

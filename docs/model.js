@@ -33,7 +33,19 @@ export async function fetchModel(url, onProgress = () => {}) {
   let got = 0;
   const chunks = [];
   for (const p of parts) {
-    chunks.push(...await fetchBytes(p, (n) => { got += n; onProgress(got, total); }));
+    // retry each part a few times: big downloads over flaky connections (or HTTP/3 hiccups) do fail mid-stream
+    for (let attempt = 1; ; attempt++) {
+      let partGot = 0;
+      try {
+        chunks.push(...await fetchBytes(p, (n) => { partGot += n; onProgress(got + partGot, total); }));
+        got += partGot;
+        break;
+      } catch (e) {
+        if (attempt >= 4) throw e;
+        onProgress(got, total);
+        await new Promise((r) => setTimeout(r, 500 * attempt));
+      }
+    }
   }
   const buf = new Uint8Array(got);
   let o = 0;

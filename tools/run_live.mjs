@@ -6,7 +6,7 @@ const ctx = await browser.newContext({ permissions: ["microphone"] });
 const page = await ctx.newPage();
 page.on("pageerror", (e) => console.log("[pageerror]", e.message));
 page.on("console", (m) => { if (m.type() === "error" && !m.text().includes("404")) console.log("[console]", m.text()); });
-await page.goto("http://127.0.0.1:8765/docs/index.html");
+await page.goto(process.env.URL || "http://127.0.0.1:8765/docs/index.html");
 await page.click("#load");
 await page.waitForFunction(() => !document.getElementById("rec").disabled, null, { timeout: 120000 });
 await page.click("#rec");
