@@ -1,0 +1,12 @@
+.venv/
+hf/
+base/
+data/
+work/
+dist/
+wasm/target/
+tools/node_modules/
+__pycache__/
+.DS_Store
+phonon-src/
+.impeccable/

@@ -1,0 +1,11 @@
+{
+ "format": "phonon2-web-v1",
+ "bytes": 162599472,
+ "sha256": "20fc3d737763776454d71da84a742193db44ba705a28410eaf8506666f2f53cd",
+ "parts": [
+  "phonon2.phon.part0",
+  "phonon2.phon.part1",
+  "phonon2.phon.part2",
+  "phonon2.phon.part3"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "phonon_wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "files": [
+    "phonon_wasm_bg.wasm",
+    "phonon_wasm.js",
+    "phonon_wasm.d.ts"
+  ],
+  "main": "phonon_wasm.js",
+  "types": "phonon_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

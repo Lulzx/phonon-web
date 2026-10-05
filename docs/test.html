@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Phonon-2 web engine test</title>
+<pre id="log"></pre>
+<script type="module">
+import { Phonon } from "./engine.js";
+import { parseWav } from "./audio.js";
+import { fetchModel } from "./model.js";
+const log = (s) => { document.getElementById("log").textContent += s + "\n"; console.log(s); };
+const qs = new URLSearchParams(location.search);
+const model = qs.get("model") || "model/manifest.json";
+window.__results = null;
+(async () => {
+  try {
+    let t = performance.now();
+    const buf = await fetchModel(new URL(model, location.href).href);
+    log(`fetched ${model} ${(buf.byteLength / 1e6).toFixed(1)} MB in ${(performance.now() - t).toFixed(0)} ms`);
+    t = performance.now();
+    const eng = await Phonon.create(buf);
+    log(`loaded in ${(performance.now() - t).toFixed(0)} ms`);
+    const ex = await (await fetch("test/expected.json")).json();
+    const res = [];
+    for (const e of ex) {
+      const pcm = parseWav(await (await fetch("test/" + e.file)).arrayBuffer());
+      const r = await eng.transcribe(pcm);
+      const same = JSON.stringify(r.tokens) === JSON.stringify(e.py_tokens);
+      log(`${e.file} ${same ? "MATCH" : "DIFF "} enc ${r.timing.encoder.toFixed(0)}ms dec ${r.timing.decoder.toFixed(0)}ms ` +
+          `feat ${r.timing.features.toFixed(0)}ms audio ${r.timing.audio.toFixed(1)}s\n  web: ${r.text.slice(0, 200)}\n  py : ${e.py_text.slice(0, 200)}`);
+      res.push({ file: e.file, same, text: r.text, tokens: r.tokens, timing: r.timing, ref: e.ref, py_text: e.py_text });
+    }
+    window.__results = res;
+  } catch (err) {
+    log("ERROR " + err.stack);
+    window.__results = { error: String(err.stack) };
+  }
+})();
+</script>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonon-2 — speech recognition in your browser</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%227%22 fill=%22%232b5d4a%22/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f6f5f1; --fg: #1c1b19; --mute: #6d6a63; --line: #dcd9d1; --acc: #2b5d4a; --acc-fg: #fff; --err: #a4321d;
+    --card: #fffefb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151513; --fg: #ecebe6; --mute: #9a978f; --line: #33322e; --acc: #6fbf9c; --acc-fg: #0c1a14;
+      --err: #f08a74; --card: #1c1c19; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 ui-sans-serif, -apple-system, "Segoe UI",
+    Inter, Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: 28px; letter-spacing: -0.01em; margin: 0 0 4px; font-weight: 650; }
+  .sub { color: var(--mute); margin: 0 0 28px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin: 14px 0; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 8px 14px;
+    border-radius: 8px; cursor: pointer; }
+  button.primary { background: var(--acc); color: var(--acc-fg); border-color: var(--acc); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  button.rec { border-color: var(--err); color: var(--err); }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; flex: 1; min-width: 160px; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--acc); transition: width .15s; }
+  .status { color: var(--mute); font-size: 14px; font-variant-numeric: tabular-nums; }
+  #drop { border: 1.5px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center; color: var(--mute); }
+  #drop.over { border-color: var(--acc); color: var(--fg); }
+  #out { white-space: pre-wrap; min-height: 3em; font-size: 17px; }
+  #out .pending { color: var(--mute); }
+  #out:empty::before { content: "Transcript appears here."; color: var(--mute); }
+  .stats { font-size: 13px; color: var(--mute); font-variant-numeric: tabular-nums; margin-top: 10px; }
+  .err { color: var(--err); white-space: pre-wrap; font-size: 14px; }
+  label.tog { font-size: 14px; color: var(--mute); display: inline-flex; gap: 6px; align-items: center; }
+  .seg { display: block; }
+  .seg b { font-weight: 500; color: var(--mute); font-variant-numeric: tabular-nums; font-size: 13px; margin-right: 8px; }
+  footer { color: var(--mute); font-size: 13px; margin-top: 32px; }
+  a { color: var(--acc); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Phonon-2, in your browser</h1>
+  <p class="sub">English speech recognition that runs entirely on your device — WebGPU for the encoder, WebAssembly
+    for features, weight decompression and decoding. Audio never leaves the page.</p>
+
+  <div class="card">
+    <div class="row">
+      <button id="load" class="primary">Load model</button>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <div class="status" id="status" style="margin-top:8px">Not loaded.</div>
+  </div>
+
+  <div class="card">
+    <div id="drop">Drop an audio file here, or
+      <button id="pick" disabled>choose a file</button>
+      <button id="rec" disabled>● Record</button>
+      <input id="file" type="file" accept="audio/*,video/*" hidden>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+      <label class="tog"><input type="checkbox" id="ts"> timestamps</label>
+      <button id="copy" disabled>Copy</button>
+    </div>
+    <div id="out"></div>
+    <div class="stats" id="stats"></div>
+    <div class="err" id="err"></div>
+  </div>
+
+  <footer>
+    Model: <a href="https://huggingface.co/FermionResearch/Phonon-2">Phonon-2</a> by Fermion Research (CC-BY-4.0),
+    derived from NVIDIA Parakeet TDT 0.6B v3, re-quantised and entropy-coded for the web.
+    Needs a browser with WebGPU (Chrome/Edge 113+, Safari 26+, Firefox 141+ on Windows).
+  </footer>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
